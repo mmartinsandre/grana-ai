@@ -9,4 +9,4 @@ class Config:
 
     def __init__(self):
         if not self.TELEGRAM_TOKEN:
-            raise ValueError("No TELEGRAM_TOKEN set for Flask application")
+            raise ValueError("No TELEGRAM_TOKEN set for application")
