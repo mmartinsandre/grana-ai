@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import ContextTypes, CommandHandler
 from data_manager import DataManager
 from datetime import datetime, timedelta
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import io
 
 async def report(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -28,13 +28,10 @@ async def report(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         amount = t['amount']
         category_totals[category] = category_totals.get(category, 0) + amount
     
-    plt.figure(figsize=(10, 6))
-    plt.pie(category_totals.values(), labels=category_totals.keys(), autopct='%1.1f%%')
-    plt.title("Gastos por Categoria (Último Mês)")
-
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
+    fig = go.Figure(data=[go.Pie(labels=list(category_totals.keys()), values=list(category_totals.values()))])
+    fig.update_layout(title_text="Gastos por Categoria (Último Mês)")
+    
+    img_bytes = fig.to_image(format="png")
     
     report_text = "Relatório do último mês:\n\n"
     for category, total in category_totals.items():
@@ -43,7 +40,7 @@ async def report(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(report_text)
     await context.bot.send_photo(
         chat_id=update.effective_chat.id,
-        photo=buf
+        photo=img_bytes
     )
 
-report_handler = CommandHandler("report", report)
+report_handler = CommandHandler("relatorio", report)
