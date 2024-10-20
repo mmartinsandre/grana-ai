@@ -27,24 +27,30 @@ def main():
     config = Config()
     dm = DataManager()
 
-    application = Application.builder().token(config.TELEGRAM_TOKEN).build()
-    application.add_handler(CommandHandler("iniciar", start_handler))
-    application.add_handler(CommandHandler("ajuda", help_handler))
-    application.add_handler(add_transaction_handler)
-    application.add_handler(filter_transactions_handler)
-    application.add_handler(delete_transaction_handler)
-    application.add_handler(CommandHandler("saldo", balance_handler))
-    application.add_handler(categories_handler)
-    application.add_handler(CommandHandler("relatorio", report_handler))
-    application.add_handler(goal_handler)
-    application.add_handler(recurring_conv_handler)
-    application.add_handler(budget_conv_handler)
-    application.add_handler(investment_conv_handler)
-    application.add_handler(currency_conv_handler)
-    application.add_handler(CommandHandler("analise", analytics_handler))
-    application.add_handler(CommandHandler("resetar", reset_command_handler))
+    try:
+        application = Application.builder().token(config.TELEGRAM_TOKEN).build()
+        
+        # Add handlers
+        application.add_handler(CommandHandler("start", start_handler))
+        application.add_handler(CommandHandler("help", help_handler))
+        application.add_handler(add_transaction_handler)
+        application.add_handler(filter_transactions_handler)
+        application.add_handler(delete_transaction_handler)
+        application.add_handler(CommandHandler("balance", balance_handler))
+        application.add_handler(categories_handler)
+        application.add_handler(CommandHandler("report", report_handler))
+        application.add_handler(goal_handler)
+        application.add_handler(recurring_conv_handler)
+        application.add_handler(budget_conv_handler)
+        application.add_handler(investment_conv_handler)
+        application.add_handler(currency_conv_handler)
+        application.add_handler(CommandHandler("analytics", analytics_handler))
+        application.add_handler(CommandHandler("reset", reset_command_handler))
 
-    application.run_polling()
+        logger.info("Bot started successfully")
+        application.run_polling()
+    except Exception as e:
+        logger.error(f"Error starting bot: {str(e)}")
 
 if __name__ == '__main__':
     main()
