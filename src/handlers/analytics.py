@@ -1,8 +1,8 @@
-import matplotlib.pyplot as plt
 import io
 from telegram import Update
 from telegram.ext import ContextTypes
 from data_manager import DataManager
+import plotly.graph_objects as go
 
 async def analytics_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.effective_user.id
@@ -19,21 +19,18 @@ async def analytics_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         else:
             categories[transaction['category']] = transaction['amount']
     
-    # Create pie chart
-    plt.figure(figsize=(10, 6))
-    plt.pie(categories.values(), labels=categories.keys(), autopct='%1.1f%%')
-    plt.title("Spending by Category")
+    # Create pie chart using Plotly
+    fig = go.Figure(data=[go.Pie(labels=list(categories.keys()), values=list(categories.values()))])
+    fig.update_layout(title_text="Gastos por Categoria")
     
     # Save plot to buffer
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
+    img_bytes = fig.to_image(format="png")
     
     # Send plot to user
-    await context.bot.send_photo(chat_id=update.effective_chat.id, photo=buf)
+    await context.bot.send_photo(chat_id=update.effective_chat.id, photo=img_bytes)
     
     # Prepare text report
-    report = "Spending Analysis:\n\n"
+    report = "Análise de Gastos:\n\n"
     total_spending = sum(categories.values())
     for category, amount in categories.items():
         percentage = (amount / total_spending) * 100
