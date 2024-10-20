@@ -12,5 +12,4 @@ from .budget import budget_conv_handler
 from .investment import investment_conv_handler
 from .currency import currency_conv_handler
 from .analytics import analytics_handler
-from .common import cancel
 from .reset import reset_command_handler
